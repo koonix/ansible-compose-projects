@@ -1,0 +1,42 @@
+- name: Create dirs
+  ansible.builtin.file:
+    state: directory
+    path: '{{ item.path }}'
+    mode: '{{ item.mode | default("700") }}'
+    owner: root
+    group: root
+  loop:
+    - path: '{{ docker_compose_lib_dir }}'
+
+- name: Remove extraneous instances
+  ansible.builtin.shell:
+    chdir: '{{ dir }}'
+    cmd: |
+      for file in * .*; do
+        [ ! -e "$file" ] && continue
+        case $file in
+          {{ ( [ '.', '..' ] + keep ) | map('ansible.builtin.quote') | join('|') }}) ;;
+          *)
+            if [ -e "$file/docker-compose.yml" ]; then
+              docker compose --project-directory "$file" down
+            fi
+            rm -r -- "$file"
+            echo removed
+          ;;
+        esac
+      done
+  register: rmextra
+  changed_when: "'removed' in rmextra.stdout"
+  vars:
+    # IMPORTANT: update the 'keep' list to reflect the files that we want to keep
+    dir: '{{ docker_compose_lib_dir }}'
+    keep: '{{ docker_compose_instances | map(attribute="name") }}'
+
+- name: Setup instances
+  ansible.builtin.include_tasks:
+    file: setup.yml
+  vars:
+    instance_dir: '{{ docker_compose_lib_dir }}/{{ instance.name }}'
+  loop: '{{ docker_compose_instances }}'
+  loop_control:
+    loop_var: instance

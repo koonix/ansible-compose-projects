@@ -1,0 +1,63 @@
+- name: '[{{ instance.name }}] Create dirs'
+  ansible.builtin.file:
+    state: directory
+    path: '{{ item.path }}'
+    mode: '{{ item.mode | default("700") }}'
+    owner: root
+    group: root
+  loop:
+    - path: '{{ instance_dir }}'
+
+- name: '[{{ instance.name }}] Install docker-compose.yml'
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    mode: '{{ item.mode | default("644") }}'
+    owner: root
+    group: root
+  loop:
+    - src: docker-compose.yml.j2
+      dest: '{{ instance_dir }}/docker-compose.yml'
+
+- name: '[{{ instance.name }}] Install assets'
+  ansible.builtin.copy:
+    content: '{{ item.content }}'
+    dest: '{{ instance_dir }}/{{ item.name }}'
+    mode: '{{ item.mode | default("644") }}'
+    owner: root
+    group: root
+  loop: '{{ instance.assets | default([]) }}'
+  register: assets
+
+- name: '[{{ instance.name }}] Remove extraneous files from the instance dir'
+  ansible.builtin.shell:
+    chdir: '{{ dir }}'
+    cmd: |
+      for file in * .*; do
+        [ ! -e "$file" ] && continue
+        case $file in
+          {{ ( [ '.', '..' ] + keep ) | map('ansible.builtin.quote') | join('|') }}) ;;
+          *) rm -r -- "$file"; echo removed ;;
+        esac
+      done
+  register: rmextra
+  changed_when: "'removed' in rmextra.stdout"
+  vars:
+    # IMPORTANT: update the 'keep' list to reflect the files that we want to keep
+    dir: '{{ instance_dir }}'
+    keep: '{{ [ "docker-compose.yml" ] + ( ( instance.assets | default([]) ) | map(attribute="name") ) }}'
+
+- name: '[{{ instance.name }}] Remove docker images to trigger a rebuild'
+  ansible.builtin.shell:
+    chdir: '{{ instance_dir }}'
+    cmd: |
+      docker compose down
+      docker image rm -- $(docker compose config --images) ||:
+  when: assets.changed
+
+- name: '[{{ instance.name }}] Start the stack'
+  ansible.builtin.command:
+    argv: [ docker, compose, up, --detach, --remove-orphans ]
+    chdir: '{{ instance_dir }}'
+  register: compose
+  changed_when: '"Started" in compose.stderr'

@@ -1,0 +1,10 @@
+{% set compose_project_name = instance.compose_project_name | default(instance.name) %}
+{% set compose_version = instance.compose_version | default('3.8') %}
+{% set compose = instance.compose | default({}) %}
+
+name: {{ compose_project_name | ansible.builtin.to_yaml | ansible.builtin.regex_replace('\n$', '') }}
+version: {{ compose_version | ansible.builtin.to_yaml | ansible.builtin.regex_replace('\n$', '') }}
+
+{{ compose | ansible.builtin.to_nice_yaml }}
+
+# vim:expandtab:shiftwidth=2
