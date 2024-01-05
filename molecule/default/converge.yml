@@ -1,0 +1,31 @@
+- name: Converge
+  hosts: all
+  become: true
+  roles:
+    - koonix.docker.docker
+    - koonix.docker_compose.docker_compose
+
+  vars:
+
+    docker_compose_instances:
+
+      - name: compose-1
+        compose:
+          services:
+            busybox:
+              image: busybox:1
+              command: [ sleep, '10' ]
+              restart: unless-stopped
+
+      - name: compose-2
+        compose:
+          services:
+            busybox:
+              build:
+                context: .
+              restart: unless-stopped
+        assets:
+          - name: Dockerfile
+            content: |
+              FROM busybox:1
+              CMD [ "sleep", "10" ]

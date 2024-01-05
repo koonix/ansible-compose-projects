@@ -1,0 +1,4 @@
+collections:
+  - name: https://github.com/koonix/ansible-docker.git
+    type: git
+    version: 0.1.3

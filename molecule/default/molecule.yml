@@ -1,0 +1,13 @@
+dependency:
+  name: galaxy
+  options:
+    requirements-file: molecule/requirements.yml
+
+driver:
+  name: vagrant
+  provider:
+    name: libvirt
+
+platforms:
+  - name: molecule-koonix-docker-compose
+    box: debian/bookworm64
