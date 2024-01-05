@@ -1,0 +1,12 @@
+namespace: koonix
+name: docker_compose
+version: 0.1.0
+description: Roles to configure and run Docker Compose stacks.
+repository: https://github.com/koonix/ansible-docker-compose
+issues:     https://github.com/koonix/ansible-docker-compose/issues
+authors: [ 'koonix <me@koonix.org>' ]
+license: [ 'MIT' ]
+readme: README.md
+tags:
+  - docker
+  - docker-compose
