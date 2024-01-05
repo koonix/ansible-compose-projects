@@ -1,0 +1,49 @@
+name: molecule test
+
+on:
+
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+env:
+  PY_COLORS: '1'
+
+jobs:
+
+  molecule:
+
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install vagrant libvirt-daemon-system qemu-system
+          pipx install 'molecule<6' # see footnote
+          pipx inject molecule 'molecule-plugins[vagrant]'
+          pipx inject ansible-core 'python-vagrant'
+
+      - name: Enable access to libvirt
+        run: sudo chmod 666 /run/libvirt/libvirt-sock
+
+      - name: Run the tests
+        run: molecule test
+
+# footnote:
+#   molecule versions 6.0.0 to 6.0.3 (the latest version at the time of writing)
+#   have issues pulling dependencies using ansible-galaxy.
+#   we're using the latest 5.x.x as a workaround.
+#   https://github.com/ansible/molecule/issues/4015
