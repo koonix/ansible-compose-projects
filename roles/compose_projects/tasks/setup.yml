@@ -8,7 +8,7 @@
   loop:
     - path: '{{ instance_dir }}'
 
-- name: '[{{ instance.name }}] Install docker-compose.yml'
+- name: '[{{ instance.name }}] Install compose.yml'
   ansible.builtin.template:
     src: '{{ item.src }}'
     dest: '{{ item.dest }}'
@@ -16,8 +16,8 @@
     owner: root
     group: root
   loop:
-    - src: docker-compose.yml.j2
-      dest: '{{ instance_dir }}/docker-compose.yml'
+    - src: compose.yml.j2
+      dest: '{{ instance_dir }}/compose.yml'
 
 - name: '[{{ instance.name }}] Install assets'
   ansible.builtin.copy:
@@ -29,15 +29,15 @@
   loop: '{{ instance.assets | default([]) }}'
   register: assets
 
-- name: '[{{ instance.name }}] Remove extraneous files from the instance dir'
+- name: '[{{ instance.name }}] Remove extraneous objects from the instance dir'
   ansible.builtin.shell:
     chdir: '{{ dir }}'
     cmd: |
-      for file in * .*; do
-        [ ! -e "$file" ] && continue
-        case $file in
+      for path in * .*; do
+        [ ! -e "$path" ] && continue
+        case $path in
           {{ ( [ '.', '..' ] + keep ) | map('ansible.builtin.quote') | join('|') }}) ;;
-          *) rm -r -- "$file"; echo removed ;;
+          *) rm -r -- "$path"; echo removed ;;
         esac
       done
   register: rmextra
@@ -45,7 +45,7 @@
   vars:
     # IMPORTANT: update the 'keep' list to reflect the files that we want to keep
     dir: '{{ instance_dir }}'
-    keep: '{{ [ "docker-compose.yml" ] + ( ( instance.assets | default([]) ) | map(attribute="name") ) }}'
+    keep: '{{ [ "compose.yml" ] + ( ( instance.assets | default([]) ) | map(attribute="name") ) }}'
 
 - name: '[{{ instance.name }}] Remove docker images to trigger a rebuild'
   ansible.builtin.shell:

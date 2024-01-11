@@ -1,24 +1,23 @@
-# ansible-docker-compose
+# ansible-compose-projects
 
-Ansible roles for configuring and running Docker Compose stacks.
+Ansible roles for running Docker Compose projects.
 
 ## Roles
 
-### docker_compose
+### compose_projects
 
-General-purpose role for configuring and running Docker Compose stacks.
+General-purpose role for running Docker Compose projects.
 
-This role handles instance removals as well.
+This role handles removals as well.
 
 | Variable                                                  | Required | Description |
 |-----------------------------------------------------------|:--------:|-------------|
-| `docker_compose_instances`                                | ✔        | List of instances to run. |
-| `docker_compose_instances[].name`                         | ✔        | Title of the instance. |
-| `docker_compose_instances[].compose`                      | ✔        | Map of extra configs to append to docker compose. Default: `{}`. |
-| `docker_compose_instances[].assets`                       |          | List of files to create in the instance directory, next to the docker compose file. Default: `[]` |
-| `docker_compose_instances[].assets[].name`                | ✔        | Name of the file. |
-| `docker_compose_instances[].assets[].content`             | ✔        | Content of the file. |
-| `docker_compose_instances[].assets[].mode`                |          | Permissions of the file. Default: `'644'` |
-| `docker_compose_instances[].compose_project_name`         |          | Name of the docker compose project. Defaults to the value of `docker_compose_instances[].name`. |
-| `docker_compose_instances[].compose_version`              |          | Version of the docker compose file. Default: `'3.8'` |
-| `docker_compose_lib_dir`                                  |          | Where to put docker files, configs, etc. Default: `/var/lib/ansible-docker-compose` |
+| `compose_projects`                                        | ✔        | List of instances to run. |
+| `compose_projects[].name`                                 | ✔        | Title of the instance. |
+| `compose_projects[].compose`                              | ✔        | Map of the docker compose file contents. Default: `{}`. |
+| `compose_projects[].assets`                               |          | List of files to create in the project directory, next to the docker compose file. Default: `[]` |
+| `compose_projects[].assets[].name`                        | ✔        | Name of the file. |
+| `compose_projects[].assets[].content`                     | ✔        | Content of the file. |
+| `compose_projects[].assets[].mode`                        |          | Permissions of the file. Default: `'644'` |
+| `compose_projects[].compose_project_name`                 |          | Name of the docker compose project. Defaults to the value of `compose_projects[].name`. |
+| `compose_projects_lib_dir`                                |          | Where to put docker files, configs, etc. Default: `/var/lib/ansible-compose-projects` |

@@ -3,18 +3,18 @@
   become: true
   roles:
     - koonix.docker.docker
-    - koonix.docker_compose.docker_compose
+    - koonix.compose_projects.compose_projects
 
   vars:
 
-    docker_compose_instances:
+    compose_projects:
 
       - name: compose-1
         compose:
           services:
             busybox:
               image: busybox:1
-              command: [ sleep, '10' ]
+              command: [ sleep, 'inf' ]
               restart: unless-stopped
 
       - name: compose-2
@@ -28,4 +28,4 @@
           - name: Dockerfile
             content: |
               FROM busybox:1
-              CMD [ "sleep", "10" ]
+              CMD [ "sleep", "inf" ]

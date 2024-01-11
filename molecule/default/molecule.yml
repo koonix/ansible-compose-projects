@@ -9,5 +9,5 @@ driver:
     name: libvirt
 
 platforms:
-  - name: molecule-koonix-docker-compose
+  - name: molecule-koonix-compose-projects
     box: debian/bookworm64
