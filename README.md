@@ -12,8 +12,8 @@ This role handles removals as well.
 
 | Variable                                                  | Required | Description |
 |-----------------------------------------------------------|:--------:|-------------|
-| `compose_projects`                                        | ✔        | List of instances to run. |
-| `compose_projects[].name`                                 | ✔        | Title of the instance. |
+| `compose_projects`                                        | ✔        | List of projects to run. |
+| `compose_projects[].name`                                 | ✔        | Title of the project. |
 | `compose_projects[].compose`                              | ✔        | Map of the docker compose file contents. Default: `{}`. |
 | `compose_projects[].assets`                               |          | List of files to create in the project directory, next to the docker compose file. Default: `[]` |
 | `compose_projects[].assets[].name`                        | ✔        | Name of the file. |
