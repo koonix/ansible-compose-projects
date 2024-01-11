@@ -8,7 +8,7 @@
   loop:
     - path: '{{ compose_projects_lib_dir }}'
 
-- name: Remove extraneous instances
+- name: Remove extraneous projects
   ansible.builtin.shell:
     chdir: '{{ dir }}'
     cmd: |
@@ -32,11 +32,11 @@
     dir: '{{ compose_projects_lib_dir }}'
     keep: '{{ compose_projects | map(attribute="name") }}'
 
-- name: Setup instances
+- name: Setup projects
   ansible.builtin.include_tasks:
     file: setup.yml
   vars:
-    instance_dir: '{{ compose_projects_lib_dir }}/{{ instance.name }}'
+    project_dir: '{{ compose_projects_lib_dir }}/{{ project.name }}'
   loop: '{{ compose_projects }}'
   loop_control:
-    loop_var: instance
+    loop_var: project
