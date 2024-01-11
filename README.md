@@ -19,5 +19,4 @@ This role handles removals as well.
 | `compose_projects[].assets[].name`                        | ✔        | Name of the file. |
 | `compose_projects[].assets[].content`                     | ✔        | Content of the file. |
 | `compose_projects[].assets[].mode`                        |          | Permissions of the file. Default: `'644'` |
-| `compose_projects[].compose_project_name`                 |          | Name of the docker compose project. Defaults to the value of `compose_projects[].name`. |
 | `compose_projects_lib_dir`                                |          | Where to put docker files, configs, etc. Default: `/var/lib/ansible-compose-projects` |
