@@ -18,7 +18,7 @@
           {{ ( [ '.', '..' ] + keep ) | map('ansible.builtin.quote') | join('|') }}) ;;
           *)
             if [ -e "$path/compose.yml" ]; then
-              docker compose --project-directory="$path" down
+              docker compose --project-directory="$path" down --rmi=local
             fi
             rm -r -- "$path"
             echo removed
