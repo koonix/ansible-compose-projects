@@ -117,7 +117,7 @@
     argv: '{{ item }}'
     chdir: '{{ project_dir }}'
   changed_when: true
-  loop: '{{ project.pre_start }}'
+  loop: '{{ project.pre_start | default([]) }}'
   when: compose.changed
 
 - name: '[{{ project.name }}] Start the project'
@@ -132,5 +132,5 @@
     argv: '{{ item }}'
     chdir: '{{ project_dir }}'
   changed_when: true
-  loop: '{{ project.post_start }}'
+  loop: '{{ project.post_start | default([]) }}'
   when: compose.changed
