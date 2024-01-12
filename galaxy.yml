@@ -1,6 +1,6 @@
 namespace: koonix
 name: compose_projects
-version: 0.1.0
+version: 0.1.1
 description: Roles for running Docker Compose projects.
 repository: https://github.com/koonix/ansible-compose-projects
 issues:     https://github.com/koonix/ansible-compose-projects/issues
