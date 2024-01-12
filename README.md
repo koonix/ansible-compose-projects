@@ -15,26 +15,33 @@ This role handles removals as well.
 | `compose_projects`                                        | ✔        | List of projects to run. |
 | `compose_projects[].name`                                 | ✔        | Title of the project. |
 | `compose_projects[].compose`                              | ✔        | Map of the docker compose file contents. Default: `{}`. |
+| `compose_projects[].pre_start`                            |          | Commands to run before any of the containers in the project are (re)started. See the Hooks section below. Default: `[]` |
+| `compose_projects[].post_start`                           |          | Commands to run after any of the containers in the project are (re)started. See the Hooks section below. Default: `[]` |
 | `compose_projects[].assets`                               |          | List of files to create in the project directory, next to the docker compose file. Default: `[]` |
 | `compose_projects[].assets[].name`                        | ✔        | Name of the file. |
 | `compose_projects[].assets[].content`                     | ✔        | Content of the file. |
 | `compose_projects[].assets[].mode`                        |          | Permissions of the file. Default: `'644'` |
-| `compose_projects[].assets[].hooks_pre`                   |          | Commands to run before the asset is updated. See the Hooks section below. Default: `[]` |
-| `compose_projects[].assets[].hooks_post`                  |          | Commands to run after the asset is updated. See the Hooks section below. Default: `[]` |
+| `compose_projects[].assets[].pre_update`                  |          | Commands to run before the asset is updated. See the Hooks section below. Default: `[]` |
+| `compose_projects[].assets[].post_update`                 |          | Commands to run after the asset is updated. See the Hooks section below. Default: `[]` |
 | `compose_projects_lib_dir`                                |          | Where to put the project directories. Default: `/var/lib/ansible-compose-projects` |
 
 #### Hooks
 
-Pre-install hooks (`hooks_pre`) of all assets
+Pre-update hooks of all assets
 are deduplicated and called one after another *before* any asset is installed.
 
-Similarly, post-install hooks (`hooks_post`) of all assets
+Similarly, post-update hooks of all assets
 are deduplicated and called one after another *after* all assets are installed.
 
-Hooks are called with the project directory as their working directory.
+Hooks are executed with the project directory as their working directory.
 
-The value of `hooks_pre` and `hooks_post` should be a list.
-Each item in the list should be either an [`argv`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html#parameter-argv) list,
+The value of each hook should be a list.
+
+In `pre_start` and `post_start`,
+Each item of the list should be an [`argv` list](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html#parameter-argv).
+
+In `assets[].pre_update` and `assets[].post_update`,
+Each item of the list should be either an [`argv` list](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html#parameter-argv),
 or one of the following special strings:
 
 | String               | Equivelant command |
@@ -43,7 +50,7 @@ or one of the following special strings:
 | `down`               | `docker compose down` |
 | `build`              | `docker compose build` |
 
-for example:
+For example:
 
 ```yaml
   hooks_pre:

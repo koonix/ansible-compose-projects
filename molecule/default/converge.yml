@@ -10,6 +10,7 @@
     compose_projects:
 
       - name: compose-1
+        pre_start: [ echo, hi ]
         compose:
           services:
             busybox:
@@ -18,6 +19,7 @@
               restart: unless-stopped
 
       - name: compose-2
+        post_start: [ echo, hi ]
         compose:
           services:
             busybox:
@@ -26,7 +28,7 @@
               restart: unless-stopped
         assets:
           - name: Dockerfile
-            hooks_post: [ build ]
+            post_update: [ build ]
             content: |
               FROM busybox:1
               CMD [ "sleep", "inf" ]

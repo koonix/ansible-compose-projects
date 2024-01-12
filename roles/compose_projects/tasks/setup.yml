@@ -37,7 +37,7 @@
     dir: '{{ project_dir }}'
     keep: '{{ [ "compose.yml" ] + ( ( project.assets | default([]) ) | map(attribute="name") ) }}'
 
-- name: '[{{ project.name }}] Find assets that are about to be updated'
+- name: '[{{ project.name }}] Check assets for changes'
   ansible.builtin.copy:
     content: '{{ item.content }}'
     dest: '{{ project_dir }}/{{ item.name }}'
@@ -48,7 +48,7 @@
   loop: '{{ project.assets | default([]) }}'
   register: assets
 
-- name: '[{{ project.name }}] Run pre-install hooks of assets'
+- name: '[{{ project.name }}] Run pre-update hooks of assets'
   ansible.builtin.command:
     argv: '{{ argv }}'
     chdir: '{{ project_dir }}'
@@ -70,8 +70,8 @@
         assets.results |
         selectattr("changed", "equalto", True) |
         map(attribute="item") |
-        selectattr("hooks_pre", "defined") |
-        map(attribute="hooks_pre") |
+        selectattr("pre_update", "defined") |
+        map(attribute="pre_update") |
         ansible.builtin.flatten(levels=1) |
         ansible.builtin.unique
       }}
@@ -86,7 +86,7 @@
   loop: '{{ project.assets | default([]) }}'
   register: assets
 
-- name: '[{{ project.name }}] Run post-install hooks of assets'
+- name: '[{{ project.name }}] Run post-update hooks of assets'
   ansible.builtin.command:
     argv: '{{ argv }}'
     chdir: '{{ project_dir }}'
@@ -99,15 +99,38 @@
         assets.results |
         selectattr("changed", "equalto", True) |
         map(attribute="item") |
-        selectattr("hooks_post", "defined") |
-        map(attribute="hooks_post") |
+        selectattr("post_update", "defined") |
+        map(attribute="post_update") |
         ansible.builtin.flatten(levels=1) |
         ansible.builtin.unique
       }}
 
-- name: '[{{ project.name }}] Start the stack'
+- name: '[{{ project.name }}] Check the project for changes'
+  ansible.builtin.command:
+    argv: [ docker, compose, up, --dry-run, --detach, --remove-orphans ]
+    chdir: '{{ project_dir }}'
+  register: compose
+  changed_when: '"Created" in compose.stderr'
+
+- name: '[{{ project.name }}] Run pre-start hooks'
+  ansible.builtin.command:
+    argv: '{{ item }}'
+    chdir: '{{ project_dir }}'
+  changed_when: true
+  loop: '{{ project.pre_start }}'
+  when: compose.changed
+
+- name: '[{{ project.name }}] Start the project'
   ansible.builtin.command:
     argv: [ docker, compose, up, --detach, --remove-orphans ]
     chdir: '{{ project_dir }}'
   register: compose
   changed_when: '"Started" in compose.stderr'
+
+- name: '[{{ project.name }}] Run post-start hooks'
+  ansible.builtin.command:
+    argv: '{{ item }}'
+    chdir: '{{ project_dir }}'
+  changed_when: true
+  loop: '{{ project.post_start }}'
+  when: compose.changed
