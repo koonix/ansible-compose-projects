@@ -50,12 +50,31 @@
 
 - name: '[{{ project.name }}] Run pre-install hooks of assets'
   ansible.builtin.command:
-    argv: '{{ item }}'
+    argv: '{{ argv }}'
     chdir: '{{ project_dir }}'
   changed_when: true
-  loop: '{{ hooks | ansible.builtin.unique }}'
+  loop: '{{ hooks }}'
   vars:
-    hooks: '{{ assets.results | selectattr("changed", "equalto", True) | map(attribute="item") | selectattr("hooks_pre", "defined") | map(attribute="hooks_pre") | ansible.builtin.flatten(levels=1) }}'
+    argv: &argv |
+      {% if item == "stop" %}
+      {{ [ "docker", "compose", "stop" ] }}
+      {% elif item == "down" %}
+      {{ [ "docker", "compose", "down" ] }}
+      {% elif item == "build" %}
+      {{ [ "docker", "compose", "build" ] }}
+      {% else %}
+      {{ item }}
+      {% endif %}
+    hooks: |
+      {{
+        assets.results |
+        selectattr("changed", "equalto", True) |
+        map(attribute="item") |
+        selectattr("hooks_pre", "defined") |
+        map(attribute="hooks_pre") |
+        ansible.builtin.flatten(levels=1) |
+        ansible.builtin.unique
+      }}
 
 - name: '[{{ project.name }}] Install assets'
   ansible.builtin.copy:
@@ -69,12 +88,22 @@
 
 - name: '[{{ project.name }}] Run post-install hooks of assets'
   ansible.builtin.command:
-    argv: '{{ item }}'
+    argv: '{{ argv }}'
     chdir: '{{ project_dir }}'
   changed_when: true
-  loop: '{{ hooks | ansible.builtin.unique }}'
+  loop: '{{ hooks }}'
   vars:
-    hooks: '{{ assets.results | selectattr("changed", "equalto", True) | map(attribute="item") | selectattr("hooks_post", "defined") | map(attribute="hooks_post") | ansible.builtin.flatten(levels=1) }}'
+    argv: *argv
+    hooks: |
+      {{
+        assets.results |
+        selectattr("changed", "equalto", True) |
+        map(attribute="item") |
+        selectattr("hooks_post", "defined") |
+        map(attribute="hooks_post") |
+        ansible.builtin.flatten(levels=1) |
+        ansible.builtin.unique
+      }}
 
 - name: '[{{ project.name }}] Start the stack'
   ansible.builtin.command:
