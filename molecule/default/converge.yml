@@ -10,7 +10,8 @@
     compose_projects:
 
       - name: compose-1
-        pre_start: [ echo, hi ]
+        pre_start:
+          - [ echo, hi ]
         compose:
           services:
             busybox:
@@ -19,7 +20,8 @@
               restart: unless-stopped
 
       - name: compose-2
-        post_start: [ echo, hi ]
+        post_start:
+          - [ echo, hi ]
         compose:
           services:
             busybox:
