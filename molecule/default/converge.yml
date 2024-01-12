@@ -14,7 +14,7 @@
           services:
             busybox:
               image: busybox:1
-              command: [ sleep, 'inf' ]
+              command: [ sleep, inf ]
               restart: unless-stopped
 
       - name: compose-2
