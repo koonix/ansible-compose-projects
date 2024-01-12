@@ -19,4 +19,6 @@ This role handles removals as well.
 | `compose_projects[].assets[].name`                        | ✔        | Name of the file. |
 | `compose_projects[].assets[].content`                     | ✔        | Content of the file. |
 | `compose_projects[].assets[].mode`                        |          | Permissions of the file. Default: `'644'` |
-| `compose_projects_lib_dir`                                |          | Where to put docker files, configs, etc. Default: `/var/lib/ansible-compose-projects` |
+| `compose_projects[].assets[].hooks_pre`                   |          | Commands to run before the asset is updated, defined as a list of [`argv`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html#parameter-argv) lists. Commands run in the project directory. Deduplicated across all assets. Default: `[]` |
+| `compose_projects[].assets[].hooks_post`                  |          | Commands to run after the asset is updated, defined as a list of [`argv`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html#parameter-argv) lists. Commands run in the project directory. Deduplicated across all assets. Default: `[]` |
+| `compose_projects_lib_dir`                                |          | Where to put the project directories. Default: `/var/lib/ansible-compose-projects` |

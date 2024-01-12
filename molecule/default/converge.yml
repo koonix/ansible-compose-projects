@@ -26,6 +26,8 @@
               restart: unless-stopped
         assets:
           - name: Dockerfile
+            hooks_post:
+              - [ docker, compose, build ]
             content: |
               FROM busybox:1
               CMD [ "sleep", "inf" ]

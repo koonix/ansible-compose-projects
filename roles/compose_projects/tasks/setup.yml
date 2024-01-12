@@ -19,16 +19,6 @@
     - src: compose.yml.j2
       dest: '{{ project_dir }}/compose.yml'
 
-- name: '[{{ project.name }}] Install assets'
-  ansible.builtin.copy:
-    content: '{{ item.content }}'
-    dest: '{{ project_dir }}/{{ item.name }}'
-    mode: '{{ item.mode | default("644") }}'
-    owner: root
-    group: root
-  loop: '{{ project.assets | default([]) }}'
-  register: assets
-
 - name: '[{{ project.name }}] Remove extraneous objects from the project dir'
   ansible.builtin.shell:
     chdir: '{{ dir }}'
@@ -47,13 +37,44 @@
     dir: '{{ project_dir }}'
     keep: '{{ [ "compose.yml" ] + ( ( project.assets | default([]) ) | map(attribute="name") ) }}'
 
-- name: '[{{ project.name }}] Remove docker images to trigger a rebuild'
-  ansible.builtin.shell:
+- name: '[{{ project.name }}] Find assets that are about to be updated'
+  ansible.builtin.copy:
+    content: '{{ item.content }}'
+    dest: '{{ project_dir }}/{{ item.name }}'
+    mode: '{{ item.mode | default("644") }}'
+    owner: root
+    group: root
+  check_mode: true
+  loop: '{{ project.assets | default([]) }}'
+  register: assets
+
+- name: '[{{ project.name }}] Run pre-install hooks of assets'
+  ansible.builtin.command:
+    argv: '{{ item }}'
     chdir: '{{ project_dir }}'
-    cmd: |
-      docker compose down
-      docker image rm -- $(docker compose config --images) ||:
-  when: assets.changed
+  changed_when: true
+  loop: '{{ hooks | ansible.builtin.unique }}'
+  vars:
+    hooks: '{{ assets.results | selectattr("changed", "equalto", True) | map(attribute="item") | selectattr("hooks_pre", "defined") | map(attribute="hooks_pre") | ansible.builtin.flatten(levels=1) }}'
+
+- name: '[{{ project.name }}] Install assets'
+  ansible.builtin.copy:
+    content: '{{ item.content }}'
+    dest: '{{ project_dir }}/{{ item.name }}'
+    mode: '{{ item.mode | default("644") }}'
+    owner: root
+    group: root
+  loop: '{{ project.assets | default([]) }}'
+  register: assets
+
+- name: '[{{ project.name }}] Run post-install hooks of assets'
+  ansible.builtin.command:
+    argv: '{{ item }}'
+    chdir: '{{ project_dir }}'
+  changed_when: true
+  loop: '{{ hooks | ansible.builtin.unique }}'
+  vars:
+    hooks: '{{ assets.results | selectattr("changed", "equalto", True) | map(attribute="item") | selectattr("hooks_post", "defined") | map(attribute="hooks_post") | ansible.builtin.flatten(levels=1) }}'
 
 - name: '[{{ project.name }}] Start the stack'
   ansible.builtin.command:
