@@ -19,6 +19,11 @@
     - src: compose.yml.j2
       dest: '{{ project_dir }}/compose.yml'
 
+- name: '[{{ project.name }}] Validate compose.yml'
+  ansible.builtin.command:
+    argv: [ docker, compose, config, --quiet ]
+  changed_when: false
+
 - name: '[{{ project.name }}] Remove extraneous objects from the project dir'
   ansible.builtin.shell:
     chdir: '{{ dir }}'
