@@ -22,6 +22,7 @@
 - name: '[{{ project.name }}] Validate compose.yml'
   ansible.builtin.command:
     argv: [ docker, compose, config, --quiet ]
+    chdir: '{{ project_dir }}'
   changed_when: false
 
 - name: '[{{ project.name }}] Remove extraneous objects from the project dir'
