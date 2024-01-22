@@ -18,9 +18,10 @@ This role handles removals as well.
 | `compose_projects[].pre_start`                            |          | Commands to run before any of the containers in the project are (re)started. See the Hooks section below. Default: `[]` |
 | `compose_projects[].post_start`                           |          | Commands to run after any of the containers in the project are (re)started. See the Hooks section below. Default: `[]` |
 | `compose_projects[].assets`                               |          | List of files to copy to the project directory, next to the docker compose file. Default: `[]` |
-| `compose_projects[].assets[].src`                         |          | Local path to the file. `content` takes effect if not provided. |
-| `compose_projects[].assets[].content`                     |          | Content of the file. `src` takes effect if not provided. |
-| `compose_projects[].assets[].dest`                        |          | Name of the file in the destination. Defaults to the basename of `src`. |
+| `compose_projects[].assets[].type`                        |          | Can be `file` or `template` to indicate the type of the asset. |
+| `compose_projects[].assets[].src`                         |          | Local path to the file or template. `assets[].content` takes effect if not provided and `assets[].type` is `file`. |
+| `compose_projects[].assets[].content`                     |          | Content of the file. Works only when `assets[].type` is `file`. `assets[].src` takes effect if not provided. |
+| `compose_projects[].assets[].dest`                        |          | Name of the file in the destination. Defaults to the basename of `assets[].src`. |
 | `compose_projects[].assets[].mode`                        |          | Permissions of the file. Default: `'644'` |
 | `compose_projects[].assets[].pre_update`                  |          | Commands to run before the asset is updated. See the Hooks section below. Default: `[]` |
 | `compose_projects[].assets[].post_update`                 |          | Commands to run after the asset is updated. See the Hooks section below. Default: `[]` |

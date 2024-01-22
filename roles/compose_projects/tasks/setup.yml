@@ -4,7 +4,7 @@
     fail_msg: 'An asset dict contains unknown parameters: {{ unknown_params | join(", ") }}'
     quiet: true
   vars:
-    allowed_params: [ src, content, dest, mode, pre_update, post_update ]
+    allowed_params: [ type, src, content, dest, mode, pre_update, post_update ]
     unknown_params: |
       {{
         project.assets | default([]) |
@@ -70,7 +70,7 @@
         map("ansible.builtin.basename")
       }}
 
-- name: '[{{ project.name }}] Check assets for changes'
+- name: '[{{ project.name }}] Check file assets for changes'
   ansible.builtin.copy:
     src: '{{ item.src | default(omit) }}'
     content: '{{ item.content | default(omit) }}'
@@ -79,8 +79,21 @@
     owner: root
     group: root
   check_mode: true
+  when: item.type | default('file') == 'file'
   loop: '{{ project.assets | default([]) }}'
-  register: assets
+  register: file_assets
+
+- name: '[{{ project.name }}] Check template assets for changes'
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '{{ project_dir }}/{{ item.dest | default(item.src) | ansible.builtin.basename }}'
+    mode: '{{ item.mode | default("644") }}'
+    owner: root
+    group: root
+  check_mode: true
+  when: item.type | default('file') == 'template'
+  loop: '{{ project.assets | default([]) }}'
+  register: template_assets
 
 - name: '[{{ project.name }}] Run pre-update hooks of assets'
   ansible.builtin.command:
@@ -101,7 +114,7 @@
       {% endif %}
     hooks: |
       {{
-        assets.results |
+        ( file_assets.results + template_assets.results ) |
         selectattr("changed", "equalto", True) |
         map(attribute="item") |
         selectattr("pre_update", "defined") |
@@ -109,7 +122,7 @@
         ansible.builtin.flatten(levels=1)
       }}
 
-- name: '[{{ project.name }}] Install assets'
+- name: '[{{ project.name }}] Install file assets'
   ansible.builtin.copy:
     src: '{{ item.src | default(omit) }}'
     content: '{{ item.content | default(omit) }}'
@@ -117,8 +130,20 @@
     mode: '{{ item.mode | default("644") }}'
     owner: root
     group: root
+  when: item.type | default('file') == 'file'
   loop: '{{ project.assets | default([]) }}'
-  register: assets
+  register: file_assets
+
+- name: '[{{ project.name }}] Install template assets'
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '{{ project_dir }}/{{ item.dest | default(item.src) | ansible.builtin.basename }}'
+    mode: '{{ item.mode | default("644") }}'
+    owner: root
+    group: root
+  when: item.type | default('file') == 'template'
+  loop: '{{ project.assets | default([]) }}'
+  register: template_assets
 
 - name: '[{{ project.name }}] Run post-update hooks of assets and compose.yml'
   ansible.builtin.command:
@@ -132,7 +157,7 @@
     compose_hooks: '{{ composefile.changed | ansible.builtin.ternary([ "build" ], []) }}'
     asset_hooks: |
       {{
-        assets.results |
+        ( file_assets.results + template_assets.results ) |
         selectattr("changed", "equalto", True) |
         map(attribute="item") |
         selectattr("post_update", "defined") |
