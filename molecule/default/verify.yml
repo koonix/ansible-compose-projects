@@ -1,0 +1,21 @@
+- name: Verify
+  hosts: all
+  become: true
+  tasks:
+    - name: Verify
+      ansible.builtin.shell:
+        cmd: |
+          {% raw %}
+          set -eu
+          for file in pre-start post-start pre-update post-update; do
+            echo "$file"
+            [ -f "$file" ]
+            [ "$(cat "$file")" = 'text' ]
+          done
+          for container in compose-1 compose-2; do
+            echo "$container"
+            state=$(docker container inspect --format '{{.State.Running}}' "$container")
+            [ "$state" = 'true' ]
+          done
+          {% endraw %}
+      changed_when: false

@@ -11,29 +11,43 @@
 
       - name: compose-1
         pre_start:
-          - [ echo, hi ]
+          - [ sh, -c, 'echo text >> /pre-start' ]
         compose:
           services:
             busybox:
               image: busybox:1
+              container_name: compose-1
               command: [ sleep, inf ]
               restart: unless-stopped
 
       - name: compose-2
         post_start:
-          - [ echo, hi ]
+          - [ sh, -c, 'echo text >> /post-start' ]
         compose:
           services:
             busybox:
               build:
                 context: .
+              container_name: compose-2
               restart: unless-stopped
         assets:
           - dest: Dockerfile
-            post_update: [ build ]
             content: |
               FROM busybox:1
+              COPY testfile.txt /file
               CMD [ "sleep", "inf" ]
+            pre_update:
+              - [ sh, -c, 'echo text >> /pre-update' ]
+              - [ sh, -c, 'echo text >> /pre-update' ]
+            post_update:
+              - build
+              - [ sh, -c, 'echo text >> /post-update' ]
+              - [ sh, -c, 'echo text >> /post-update' ]
+
           - src: testfile.txt
             pre_update:
-              - [ echo, hi ]
+              - [ sh, -c, 'echo text >> /pre-update' ]
+              - [ sh, -c, 'echo text >> /pre-update' ]
+            post_update:
+              - [ sh, -c, 'echo text >> /post-update' ]
+              - [ sh, -c, 'echo text >> /post-update' ]
