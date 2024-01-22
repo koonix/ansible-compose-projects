@@ -7,7 +7,7 @@
         cmd: |
           {% raw %}
           set -eu
-          for file in pre-start post-start pre-update post-update; do
+          for file in /pre-start /post-start /pre-update /post-update; do
             echo "$file"
             [ -f "$file" ]
             [ "$(cat "$file")" = 'text' ]
