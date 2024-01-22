@@ -29,8 +29,11 @@
                 context: .
               restart: unless-stopped
         assets:
-          - name: Dockerfile
+          - dest: Dockerfile
             post_update: [ build ]
             content: |
               FROM busybox:1
               CMD [ "sleep", "inf" ]
+          - src: testfile.txt
+            pre_update:
+              - [ echo, hi ]

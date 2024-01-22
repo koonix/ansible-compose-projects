@@ -1,3 +1,19 @@
+- name: '[{{ project.name }}] Check the parameters of assets'
+  ansible.builtin.assert:
+    that: [ unknown_params | length == 0 ]
+    fail_msg: 'An asset dict contains unknown parameters: {{ unknown_params | join(", ") }}'
+    quiet: true
+  vars:
+    allowed_params: [ src, content, dest, mode, pre_update, post_update ]
+    unknown_params: |
+      {{
+        project.assets | default([]) |
+        map("ansible.builtin.dict2items") |
+        ansible.builtin.flatten |
+        map(attribute="key") |
+        ansible.builtin.difference(allowed_params)
+      }}
+
 - name: '[{{ project.name }}] Create dirs'
   ansible.builtin.file:
     state: directory
@@ -41,12 +57,26 @@
   vars:
     # IMPORTANT: update the 'keep' list to reflect the files that we want to keep
     dir: '{{ project_dir }}'
-    keep: '{{ [ "compose.yml" ] + ( ( project.assets | default([]) ) | map(attribute="name") ) }}'
+    keep: '{{ [ "compose.yml" ] + keep1 + keep2 }}'
+    keep1: |
+      {{
+        project.assets | default([]) |
+        selectattr("dest", "defined") |
+        map(attribute="dest")
+      }}
+    keep2: |
+      {{
+        project.assets | default([]) |
+        selectattr("dest", "undefined") |
+        map(attribute="src") |
+        map("ansible.builtin.basename")
+      }}
 
 - name: '[{{ project.name }}] Check assets for changes'
   ansible.builtin.copy:
-    content: '{{ item.content }}'
-    dest: '{{ project_dir }}/{{ item.name }}'
+    src: '{{ item.src | default(omit) }}'
+    content: '{{ item.content | default(omit) }}'
+    dest: '{{ project_dir }}/{{ item.dest | default(item.src) | ansible.builtin.basename }}'
     mode: '{{ item.mode | default("644") }}'
     owner: root
     group: root
@@ -84,8 +114,9 @@
 
 - name: '[{{ project.name }}] Install assets'
   ansible.builtin.copy:
-    content: '{{ item.content }}'
-    dest: '{{ project_dir }}/{{ item.name }}'
+    src: '{{ item.src | default(omit) }}'
+    content: '{{ item.content | default(omit) }}'
+    dest: '{{ project_dir }}/{{ item.dest | default(item.src) | ansible.builtin.basename }}'
     mode: '{{ item.mode | default("644") }}'
     owner: root
     group: root
