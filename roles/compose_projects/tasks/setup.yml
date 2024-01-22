@@ -26,14 +26,12 @@
 
 - name: '[{{ project.name }}] Install compose.yml'
   ansible.builtin.template:
-    src: '{{ item.src }}'
-    dest: '{{ item.dest }}'
-    mode: '{{ item.mode | default("644") }}'
+    src: compose.yml.j2
+    dest: '{{ project_dir }}/compose.yml'
+    mode: '644'
     owner: root
     group: root
-  loop:
-    - src: compose.yml.j2
-      dest: '{{ project_dir }}/compose.yml'
+  register: composefile
 
 - name: '[{{ project.name }}] Validate compose.yml'
   ansible.builtin.command:
@@ -89,7 +87,7 @@
     argv: '{{ argv }}'
     chdir: '{{ project_dir }}'
   changed_when: true
-  loop: '{{ hooks }}'
+  loop: '{{ hooks | ansible.builtin.unique }}'
   vars:
     argv: &argv |
       {% if item == "stop" %}
@@ -108,8 +106,7 @@
         map(attribute="item") |
         selectattr("pre_update", "defined") |
         map(attribute="pre_update") |
-        ansible.builtin.flatten(levels=1) |
-        ansible.builtin.unique
+        ansible.builtin.flatten(levels=1)
       }}
 
 - name: '[{{ project.name }}] Install assets'
@@ -123,23 +120,24 @@
   loop: '{{ project.assets | default([]) }}'
   register: assets
 
-- name: '[{{ project.name }}] Run post-update hooks of assets'
+- name: '[{{ project.name }}] Run post-update hooks of assets and compose.yml'
   ansible.builtin.command:
     argv: '{{ argv }}'
     chdir: '{{ project_dir }}'
   changed_when: true
-  loop: '{{ hooks }}'
+  loop: '{{ hooks | ansible.builtin.unique }}'
   vars:
     argv: *argv
-    hooks: |
+    hooks: '{{ compose_hooks + asset_hooks }}'
+    compose_hooks: '{{ composefile.changed | ansible.builtin.ternary([ "build" ], []) }}'
+    asset_hooks: |
       {{
         assets.results |
         selectattr("changed", "equalto", True) |
         map(attribute="item") |
         selectattr("post_update", "defined") |
         map(attribute="post_update") |
-        ansible.builtin.flatten(levels=1) |
-        ansible.builtin.unique
+        ansible.builtin.flatten(levels=1)
       }}
 
 - name: '[{{ project.name }}] Check the project for changes'
