@@ -4,18 +4,26 @@
   tasks:
     - name: Verify
       ansible.builtin.shell:
+        executable: /bin/bash
         cmd: |
           {% raw %}
-          set -eu
+
+          set -euE -o pipefail
+          trap 'echo "${0##*/}: failed @ line $LINENO: $BASH_COMMAND"' ERR
+
           for file in /pre-start /post-start /pre-update /post-update; do
             echo "$file"
             [ -f "$file" ]
             [ "$(cat "$file")" = 'text' ]
           done
+
           for container in compose-1 compose-2; do
             echo "$container"
             state=$(docker container inspect --format '{{.State.Running}}' "$container")
             [ "$state" = 'true' ]
           done
+
+          [ "$(cat /var/lib/ansible-compose-projects/compose-2/test-template.txt)" = 'template file' ]
+
           {% endraw %}
       changed_when: false

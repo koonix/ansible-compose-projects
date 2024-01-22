@@ -34,7 +34,7 @@
           - dest: Dockerfile
             content: |
               FROM busybox:1
-              COPY testfile.txt /file
+              COPY test-file.txt /file
               CMD [ "sleep", "inf" ]
             pre_update:
               - [ sh, -c, 'echo text >> /pre-update' ]
@@ -44,7 +44,16 @@
               - [ sh, -c, 'echo text >> /post-update' ]
               - [ sh, -c, 'echo text >> /post-update' ]
 
-          - src: testfile.txt
+          - src: test-file.txt
+            pre_update:
+              - [ sh, -c, 'echo text >> /pre-update' ]
+              - [ sh, -c, 'echo text >> /pre-update' ]
+            post_update:
+              - [ sh, -c, 'echo text >> /post-update' ]
+              - [ sh, -c, 'echo text >> /post-update' ]
+
+          - src: test-template.txt
+            type: template
             pre_update:
               - [ sh, -c, 'echo text >> /pre-update' ]
               - [ sh, -c, 'echo text >> /pre-update' ]
