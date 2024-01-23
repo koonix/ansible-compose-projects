@@ -80,6 +80,7 @@
     group: root
   check_mode: true
   when: item.type | default('file') == 'file'
+  no_log: item.no_log | default(False)
   loop: '{{ project.assets | default([]) }}'
   register: file_assets
 
@@ -92,6 +93,7 @@
     group: root
   check_mode: true
   when: item.type | default('file') == 'template'
+  no_log: item.no_log | default(False)
   loop: '{{ project.assets | default([]) }}'
   register: template_assets
 
@@ -131,6 +133,7 @@
     owner: root
     group: root
   when: item.type | default('file') == 'file'
+  no_log: item.no_log | default(False)
   loop: '{{ project.assets | default([]) }}'
   register: file_assets
 
@@ -142,6 +145,7 @@
     owner: root
     group: root
   when: item.type | default('file') == 'template'
+  no_log: item.no_log | default(False)
   loop: '{{ project.assets | default([]) }}'
   register: template_assets
 

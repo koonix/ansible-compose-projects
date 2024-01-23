@@ -26,6 +26,7 @@ Requires Docker and it's Compose plugin to be installed.
 | `compose_projects[].assets[].content`                     |          | Content of the file. Works only when `assets[].type` is `file`. `assets[].src` takes effect if not provided. |
 | `compose_projects[].assets[].dest`                        |          | Name of the file in the destination. Defaults to the basename of `assets[].src`. |
 | `compose_projects[].assets[].mode`                        |          | Permissions of the file. Default: `'644'` |
+| `compose_projects[].assets[].no_log`                      |          | Whether to enable [`no_log`](https://docs.ansible.com/ansible/latest/reference_appendices/logging.html#protecting-sensitive-data-with-no-log) for the installation of this item. Default: `false` |
 | `compose_projects[].assets[].pre_update`                  |          | Commands to run before the asset is updated. See the Hooks section below. Default: `[]` |
 | `compose_projects[].assets[].post_update`                 |          | Commands to run after the asset is updated. See the Hooks section below. Default: `[]` |
 | `compose_projects_lib_dir`                                |          | Where to put the project directories. Default: `/var/lib/ansible-compose-projects` |

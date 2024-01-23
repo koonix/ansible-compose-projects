@@ -54,6 +54,7 @@
 
           - src: test-template.txt
             type: template
+            no_log: true
             pre_update:
               - [ sh, -c, 'echo text >> /pre-update' ]
               - [ sh, -c, 'echo text >> /pre-update' ]
