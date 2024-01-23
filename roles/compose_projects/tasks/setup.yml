@@ -4,7 +4,8 @@
     fail_msg: 'An asset dict contains unknown parameters: {{ unknown_params | join(", ") }}'
     quiet: true
   vars:
-    allowed_params: [ type, src, content, dest, mode, pre_update, post_update ]
+    # update the 'allowed_params' list to reflect supported asset parameters
+    allowed_params: [ type, src, content, dest, mode, no_log, pre_update, post_update ]
     unknown_params: |
       {{
         project.assets | default([]) |
@@ -80,7 +81,7 @@
     group: root
   check_mode: true
   when: item.type | default('file') == 'file'
-  no_log: item.no_log | default(False)
+  no_log: '{{ item.no_log | default(False) }}'
   loop: '{{ project.assets | default([]) }}'
   register: file_assets
 
@@ -93,7 +94,7 @@
     group: root
   check_mode: true
   when: item.type | default('file') == 'template'
-  no_log: item.no_log | default(False)
+  no_log: '{{ item.no_log | default(False) }}'
   loop: '{{ project.assets | default([]) }}'
   register: template_assets
 
@@ -133,7 +134,7 @@
     owner: root
     group: root
   when: item.type | default('file') == 'file'
-  no_log: item.no_log | default(False)
+  no_log: '{{ item.no_log | default(False) }}'
   loop: '{{ project.assets | default([]) }}'
   register: file_assets
 
@@ -145,7 +146,7 @@
     owner: root
     group: root
   when: item.type | default('file') == 'template'
-  no_log: item.no_log | default(False)
+  no_log: '{{ item.no_log | default(False) }}'
   loop: '{{ project.assets | default([]) }}'
   register: template_assets
 
