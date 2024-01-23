@@ -29,6 +29,7 @@ Requires Docker and it's Compose plugin to be installed.
 | `compose_projects[].assets[].pre_update`                  |          | Commands to run before the asset is updated. See the Hooks section below. Default: `[]` |
 | `compose_projects[].assets[].post_update`                 |          | Commands to run after the asset is updated. See the Hooks section below. Default: `[]` |
 | `compose_projects_lib_dir`                                |          | Where to put the project directories. Default: `/var/lib/ansible-compose-projects` |
+| `compose_projects_no_log_include`                         |          | Whether to enable [`no_log`](https://docs.ansible.com/ansible/latest/reference_appendices/logging.html#protecting-sensitive-data-with-no-log) when including tasks, to prevent cluttering ansible's CLI output. Default: `true` |
 
 #### Hooks
 

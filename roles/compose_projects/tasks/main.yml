@@ -37,6 +37,7 @@
     file: setup.yml
   vars:
     project_dir: '{{ compose_projects_lib_dir }}/{{ project.name }}'
+  no_log: '{{ compose_projects_no_log_include }}'
   loop: '{{ compose_projects }}'
   loop_control:
     loop_var: project
