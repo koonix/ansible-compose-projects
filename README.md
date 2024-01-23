@@ -73,7 +73,7 @@ Example [requirements.yml](https://docs.ansible.com/ansible/latest/galaxy/user_g
 collections:
   - name: https://github.com/koonix/ansible-compose-projects
     type: git
-    version: 0.2.3
+    version: 0.2.4
 ```
 
 Example usage in a playbook:
