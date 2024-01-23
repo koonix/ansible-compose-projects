@@ -59,3 +59,24 @@ For example:
     - build
     - [ echo, hello, world ]
 ```
+
+#### Usage
+
+Example [requirements.yml](https://docs.ansible.com/ansible/latest/galaxy/user_guide.html#installing-roles-and-collections-from-the-same-requirements-yml-file]) file:
+
+```yaml
+collections:
+  - name: https://github.com/koonix/ansible-compose-projects
+    type: git
+    version: 0.2.3
+```
+
+Example usage in a playbook:
+
+```yaml
+- name: Roles
+  hosts: all
+  roles:
+    - koonix.compose_projects.compose_projects
+    - ...
+```
