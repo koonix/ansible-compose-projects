@@ -10,6 +10,9 @@ General-purpose role for running Docker Compose projects.
 
 This role handles removals as well.
 
+Requires Docker and it's Compose plugin to be installed.
+[https://github.com/koonix/ansible-docker](Shameless plug).
+
 | Variable                                                  | Required | Description |
 |-----------------------------------------------------------|:--------:|-------------|
 | `compose_projects`                                        | ✔        | List of projects to run. |
