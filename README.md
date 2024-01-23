@@ -55,7 +55,7 @@ or one of the following special strings:
 For example:
 
 ```yaml
-  hooks_pre:
+  post_update:
     - build
     - [ echo, hello, world ]
 ```
