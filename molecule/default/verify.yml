@@ -23,6 +23,8 @@
             [ "$state" = 'true' ]
           done
 
+          [ '755' = $(stat --format=%a /var/lib/ansible-compose-projects/compose-1) ]
+          [ '700' = $(stat --format=%a /var/lib/ansible-compose-projects/compose-2) ]
           [ 'template file' = "$(cat /var/lib/ansible-compose-projects/compose-2/test-template.txt)" ]
           [ -f /var/lib/ansible-compose-projects/compose-2/test-dir/test-file.txt ]
 
