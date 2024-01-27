@@ -1,5 +1,7 @@
 # ansible-compose-projects
 
+[![Latest Version](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fkoonix%2Fansible-compose-projects%2Fmain%2Fgalaxy.yml&query=version&label=Latest%20Version&color=%23347d39)](https://github.com/koonix/ansible-compose-projects/tags)
+
 Ansible roles for running Docker Compose projects.
 
 ## Roles
