@@ -1,3 +1,19 @@
+- name: '[{{ project.name }}] Check the parameters of the project'
+  ansible.builtin.assert:
+    that: [ unknown_params | length == 0 ]
+    fail_msg: 'The project dict contains unknown parameters: {{ unknown_params | join(", ") }}'
+    quiet: true
+  vars:
+    # update the 'allowed_params' list to reflect supported project parameters
+    allowed_params: [ name, compose, pre_start, post_start, assets, dir_mode ]
+    unknown_params: |
+      {{
+        project |
+        ansible.builtin.dict2items |
+        map(attribute="key") |
+        ansible.builtin.difference(allowed_params)
+      }}
+
 - name: '[{{ project.name }}] Check the parameters of assets'
   ansible.builtin.assert:
     that: [ unknown_params | length == 0 ]
