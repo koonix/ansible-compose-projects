@@ -20,12 +20,12 @@ Requires Docker and it's Compose plugin to be installed.
 | `compose_projects[].compose`                              | ✔        | Map of the docker compose file contents. Default: `{}`. |
 | `compose_projects[].pre_start`                            |          | Commands to run before any of the containers in the project are (re)started. See the Hooks section below. Default: `[]` |
 | `compose_projects[].post_start`                           |          | Commands to run after any of the containers in the project are (re)started. See the Hooks section below. Default: `[]` |
-| `compose_projects[].assets`                               |          | List of files to copy to the project directory, next to the docker compose file. Default: `[]` |
-| `compose_projects[].assets[].type`                        |          | Can be `file` or `template` to indicate the type of the asset. |
-| `compose_projects[].assets[].src`                         |          | Local path to the file or template. `assets[].content` takes effect if not provided and `assets[].type` is `file`. |
-| `compose_projects[].assets[].content`                     |          | Content of the file. Works only when `assets[].type` is `file`. `assets[].src` takes effect if not provided. |
-| `compose_projects[].assets[].dest`                        |          | Name of the file in the destination. Defaults to the basename of `assets[].src`. |
-| `compose_projects[].assets[].mode`                        |          | Permissions of the file. Default: `'644'` |
+| `compose_projects[].assets`                               |          | List of files, directories and templates to copy to the project directory, next to the docker compose file. Default: `[]` |
+| `compose_projects[].assets[].type`                        |          | Can be `copy` or `template` to indicate the type of the asset. Default: `copy` |
+| `compose_projects[].assets[].src`                         |          | Local path to the file, directory or template. `assets[].content` takes effect if not provided and `assets[].type` is `copy`. |
+| `compose_projects[].assets[].content`                     |          | Create a file with the given content. Works only when `assets[].type` is `copy`. `assets[].src` takes effect if not provided. |
+| `compose_projects[].assets[].dest`                        |          | Name of the file or directory in the destination. Defaults to the basename of `assets[].src`. |
+| `compose_projects[].assets[].mode`                        |          | Permissions of the file or directory. Default: `'644'` |
 | `compose_projects[].assets[].no_log`                      |          | Whether to enable [`no_log`](https://docs.ansible.com/ansible/latest/reference_appendices/logging.html#protecting-sensitive-data-with-no-log) for the installation of this item. Default: `false` |
 | `compose_projects[].assets[].pre_update`                  |          | Commands to run before the asset is updated. See the Hooks section below. Default: `[]` |
 | `compose_projects[].assets[].post_update`                 |          | Commands to run after the asset is updated. See the Hooks section below. Default: `[]` |
