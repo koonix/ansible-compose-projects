@@ -23,7 +23,8 @@
             [ "$state" = 'true' ]
           done
 
-          [ "$(cat /var/lib/ansible-compose-projects/compose-2/test-template.txt)" = 'template file' ]
+          [ 'template file' = "$(cat /var/lib/ansible-compose-projects/compose-2/test-template.txt)" ]
+          [ -f /var/lib/ansible-compose-projects/compose-2/test-dir/test-file.txt ]
 
           {% endraw %}
       changed_when: false

@@ -61,3 +61,11 @@
             post_update:
               - [ sh, -c, 'echo text >> /post-update' ]
               - [ sh, -c, 'echo text >> /post-update' ]
+
+          - src: test-dir
+            pre_update:
+              - [ sh, -c, 'echo text >> /pre-update' ]
+              - [ sh, -c, 'echo text >> /pre-update' ]
+            post_update:
+              - [ sh, -c, 'echo text >> /post-update' ]
+              - [ sh, -c, 'echo text >> /post-update' ]
