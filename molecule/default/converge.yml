@@ -10,6 +10,7 @@
     compose_projects:
 
       - name: compose-1
+        dir_mode: '755'
         pre_start:
           - [ sh, -c, 'echo text >> /pre-start' ]
         compose:

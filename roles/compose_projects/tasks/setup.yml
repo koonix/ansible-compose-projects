@@ -15,15 +15,13 @@
         ansible.builtin.difference(allowed_params)
       }}
 
-- name: '[{{ project.name }}] Create dirs'
+- name: '[{{ project.name }}] Create the project dir'
   ansible.builtin.file:
     state: directory
-    path: '{{ item.path }}'
-    mode: '{{ item.mode | default("700") }}'
+    path: '{{ project_dir }}'
+    mode: '{{ project.dir_mode | default("700") }}'
     owner: root
     group: root
-  loop:
-    - path: '{{ project_dir }}'
 
 - name: '[{{ project.name }}] Install compose.yml'
   ansible.builtin.template:
