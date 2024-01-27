@@ -75,7 +75,7 @@
   ansible.builtin.copy:
     src: '{{ item.src | default(omit) }}'
     content: '{{ item.content | default(omit) }}'
-    dest: '{{ project_dir }}/{{ item.dest | default(item.src) | ansible.builtin.basename }}'
+    dest: '{{ project_dir }}/{{ item.dest | default("") }}'
     mode: '{{ item.mode | default("644") }}'
     owner: root
     group: root
@@ -129,7 +129,7 @@
   ansible.builtin.copy:
     src: '{{ item.src | default(omit) }}'
     content: '{{ item.content | default(omit) }}'
-    dest: '{{ project_dir }}/{{ item.dest | default(item.src) | ansible.builtin.basename }}'
+    dest: '{{ project_dir }}/{{ item.dest | default("") }}'
     mode: '{{ item.mode | default("644") }}'
     owner: root
     group: root
