@@ -5,7 +5,14 @@
     quiet: true
   vars:
     # update the 'allowed_params' list to reflect supported project parameters
-    allowed_params: [ name, compose, pre_start, post_start, assets, dir_mode, remove_missing_assets ]
+    allowed_params:
+      - name
+      - compose
+      - pre_start
+      - post_start
+      - assets
+      - dir_mode
+      - remove_missing_assets
     unknown_params: |
       {{
         project |
@@ -21,7 +28,15 @@
     quiet: true
   vars:
     # update the 'allowed_params' list to reflect supported asset parameters
-    allowed_params: [ type, src, content, dest, mode, no_log, pre_update, post_update ]
+    allowed_params:
+      - type
+      - src
+      - content
+      - dest
+      - mode
+      - no_log
+      - pre_update
+      - post_update
     unknown_params: |
       {{
         project.assets | default([]) |
