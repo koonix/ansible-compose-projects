@@ -1,2 +1,2 @@
 compose_projects_lib_dir: /var/lib/ansible-compose-projects
-compose_projects_no_log_include: true
+compose_projects_quiet_include: true
