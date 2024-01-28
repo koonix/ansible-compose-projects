@@ -31,6 +31,7 @@
                 context: .
               container_name: compose-2
               restart: unless-stopped
+        remove_missing_assets: false
         assets:
           - dest: Dockerfile
             content: |
