@@ -25,6 +25,7 @@
           ;;
         esac
       done
+  when: compose_projects_remove_missing
   register: rmextra
   changed_when: "'removed' in rmextra.stdout"
   vars:
